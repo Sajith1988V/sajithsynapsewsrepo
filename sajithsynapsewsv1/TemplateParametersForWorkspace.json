@@ -5,17 +5,17 @@
 		"workspaceName": {
 			"value": "sajithsynapsewsv1"
 		},
-		"sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString": {
-			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:sajithsynapsewsv1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
-		},
 		"LS_synapse_ws_ADLS_accountKey": {
 			"value": ""
 		},
-		"sajithsynapsewsv1-WorkspaceDefaultStorage_properties_typeProperties_url": {
-			"value": "https://synapsewsstorage.dfs.core.windows.net"
+		"sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:sajithsynapsewsv1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"LS_synapse_ws_ADLS_properties_typeProperties_url": {
 			"value": "https://synapsewsstorage.dfs.core.windows.net/"
+		},
+		"sajithsynapsewsv1-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://synapsewsstorage.dfs.core.windows.net"
 		}
 	}
 }

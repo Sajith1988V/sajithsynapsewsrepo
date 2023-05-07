@@ -7,123 +7,28 @@
 			"metadata": "Workspace name",
 			"defaultValue": "sajithsynapsewsv1"
 		},
+		"LS_synapse_ws_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_synapse_ws_ADLS'"
+		},
 		"sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'sajithsynapsewsv1-WorkspaceDefaultSqlServer'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:sajithsynapsewsv1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
-		"LS_synapse_ws_ADLS_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_synapse_ws_ADLS'"
+		"LS_synapse_ws_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://synapsewsstorage.dfs.core.windows.net/"
 		},
 		"sajithsynapsewsv1-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://synapsewsstorage.dfs.core.windows.net"
-		},
-		"LS_synapse_ws_ADLS_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://synapsewsstorage.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('workspaceName'), '/sajithsynapsewsv1-WorkspaceDefaultSqlServer')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"parameters": {
-					"DBName": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "AzureSqlDW",
-				"typeProperties": {
-					"connectionString": "[parameters('sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sajithsynapsewsv1-WorkspaceDefaultStorage')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('sajithsynapsewsv1-WorkspaceDefaultStorage_properties_typeProperties_url')]"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
-			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 0
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
-			"type": "Microsoft.Synapse/workspaces/credentials",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/LS_synapse_ws_ADLS')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('LS_synapse_ws_ADLS_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('LS_synapse_ws_ADLS_accountKey')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/PL_POLLUTION_DATA')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
@@ -371,6 +276,314 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/PL_US_PPP_COVID_LOAN')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyPollutionCSV",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings",
+									"maxRowsPerFile": 2000000,
+									"fileNamePrefix": ""
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "loannumber",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "loannumber",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "originatinglenderlocationid",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "originatinglenderlocationid",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "cert",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "cert",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "cb",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "cb",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "stchrtr",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "stchrtr",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "dateapproved",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "dateapproved",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "borrowername",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "borrowername",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "borrowercity",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "borrowercity",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "borrowerstate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "borrowerstate",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "originatinglender",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "originatinglender",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "originatinglendercity",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "originatinglendercity",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "originatinglenderstate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "originatinglenderstate",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "naicscode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "naicscode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "ruralurbanindicator",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ruralurbanindicator",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "lmiindicator",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "lmiindicator",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "minority",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "minority",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "currentapprovalamount",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "currentapprovalamount",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "jobsreported",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "jobsreported",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "forgivenessamount",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "forgivenessamount",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_US_PPP_COVID_LOAN",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Pollution_Parquet",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DS_US_PPP_COVID_LOAN')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_Pollution_Parquet')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DS_Pollution_Data')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -480,6 +693,326 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_US_PPP_COVID_LOAN')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_synapse_ws_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "USA_PPP_COVID_LOAN.csv",
+						"folderPath": "RawSource",
+						"fileSystem": "synapsestoragefss"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "loannumber",
+						"type": "String"
+					},
+					{
+						"name": "originatinglenderlocationid",
+						"type": "String"
+					},
+					{
+						"name": "cert",
+						"type": "String"
+					},
+					{
+						"name": "cb",
+						"type": "String"
+					},
+					{
+						"name": "stchrtr",
+						"type": "String"
+					},
+					{
+						"name": "dateapproved",
+						"type": "String"
+					},
+					{
+						"name": "borrowername",
+						"type": "String"
+					},
+					{
+						"name": "borrowercity",
+						"type": "String"
+					},
+					{
+						"name": "borrowerstate",
+						"type": "String"
+					},
+					{
+						"name": "originatinglender",
+						"type": "String"
+					},
+					{
+						"name": "originatinglendercity",
+						"type": "String"
+					},
+					{
+						"name": "originatinglenderstate",
+						"type": "String"
+					},
+					{
+						"name": "naicscode",
+						"type": "String"
+					},
+					{
+						"name": "ruralurbanindicator",
+						"type": "String"
+					},
+					{
+						"name": "lmiindicator",
+						"type": "String"
+					},
+					{
+						"name": "minority",
+						"type": "String"
+					},
+					{
+						"name": "currentapprovalamount",
+						"type": "String"
+					},
+					{
+						"name": "jobsreported",
+						"type": "String"
+					},
+					{
+						"name": "forgivenessamount",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/LS_synapse_ws_ADLS')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_synapse_ws_ADLS_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_synapse_ws_ADLS_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sajithsynapsewsv1-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sajithsynapsewsv1-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('sajithsynapsewsv1-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 1')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sajithsparkpool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "6c0a05fd-8817-4038-b572-4ae0c94678a4"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/640c9935-6193-42e0-b36a-fb1f16b5238c/resourceGroups/mysynapse-rg1/providers/Microsoft.Synapse/workspaces/sajithsynapsewsv1/bigDataPools/sajithsparkpool",
+						"name": "sajithsparkpool",
+						"type": "Spark",
+						"endpoint": "https://sajithsynapsewsv1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sajithsparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.3",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://synapsestoragefss@synapsewsstorage.dfs.core.windows.net/RawSource/USA_PPP_COVID_LOAN.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True,\r\n",
+							"delimiter=\"|\"\r\n",
+							")\r\n",
+							"df.count()"
+						],
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sajithsparkpool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 4,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.3",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": false,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "canadacentral"
 		}
 	]
 }
