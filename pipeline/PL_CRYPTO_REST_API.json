@@ -37,14 +37,13 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".csv"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
@@ -106,8 +105,11 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_CryptoCurrency_List",
-						"type": "DatasetReference"
+						"referenceName": "DS_CRYPTO_DATA",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "bitcoin"
+						}
 					}
 				]
 			},
