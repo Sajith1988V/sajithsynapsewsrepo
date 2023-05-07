@@ -20,7 +20,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "synapsestoragefss/RawSource/"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "RestSource",
@@ -42,7 +47,53 @@
 							"fileExtension": ".csv"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['price']"
+								},
+								"sink": {
+									"name": "price"
+								}
+							},
+							{
+								"source": {
+									"path": "$['exchange']"
+								},
+								"sink": {
+									"name": "exchange"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pair']"
+								},
+								"sink": {
+									"name": "pair"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pairPrice']"
+								},
+								"sink": {
+									"name": "pairPrice"
+								}
+							},
+							{
+								"source": {
+									"path": "$['volume']"
+								},
+								"sink": {
+									"name": "volume"
+								}
+							}
+						],
+						"collectionReference": ""
+					}
 				},
 				"inputs": [
 					{
