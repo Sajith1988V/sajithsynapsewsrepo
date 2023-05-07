@@ -1,0 +1,20 @@
+{
+	"name": "DS_Pollution_Parquet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_synapse_ws_ADLS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "RawParquet",
+				"fileSystem": "synapsestoragefss"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

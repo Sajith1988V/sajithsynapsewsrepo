@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "CopyPollutionCSV",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -27,19 +27,187 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Location",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Location",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Filename",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Filename",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Year",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Year",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Day",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Day",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Hour",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Hour",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "AQI",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "AQI",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "PM2.5",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PM2.5",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "PM10",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PM10",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "O3",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "O3",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "CO",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CO",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "SO2",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SO2",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "NO2",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "NO2",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "AQI_Class",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "AQI_Class",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -55,7 +223,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_Pollution_Data",
+						"referenceName": "DS_Pollution_Parquet",
 						"type": "DatasetReference"
 					}
 				]
