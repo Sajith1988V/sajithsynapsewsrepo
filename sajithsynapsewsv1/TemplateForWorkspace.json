@@ -123,6 +123,363 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_POLLUTION_DATA')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyPollutionCSV",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Location",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Location",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Filename",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Filename",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Year",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Year",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Month",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Month",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Day",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Day",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Hour",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Hour",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "AQI",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "AQI",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "PM2.5",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PM2.5",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "PM10",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PM10",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "O3",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "O3",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "CO",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "CO",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "SO2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SO2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "NO2",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NO2",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "AQI_Class",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "AQI_Class",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_Pollution_Data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_Pollution_Parquet",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DS_Pollution_Data')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_Pollution_Parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_Pollution_Data')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_synapse_ws_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "IND_and_Nep_AQI_Dataset.csv",
+						"folderPath": "RawSource/Pollution",
+						"fileSystem": "synapsestoragefss"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Location",
+						"type": "String"
+					},
+					{
+						"name": "Filename",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					},
+					{
+						"name": "Month",
+						"type": "String"
+					},
+					{
+						"name": "Day",
+						"type": "String"
+					},
+					{
+						"name": "Hour",
+						"type": "String"
+					},
+					{
+						"name": "AQI",
+						"type": "String"
+					},
+					{
+						"name": "PM2.5",
+						"type": "String"
+					},
+					{
+						"name": "PM10",
+						"type": "String"
+					},
+					{
+						"name": "O3",
+						"type": "String"
+					},
+					{
+						"name": "CO",
+						"type": "String"
+					},
+					{
+						"name": "SO2",
+						"type": "String"
+					},
+					{
+						"name": "NO2",
+						"type": "String"
+					},
+					{
+						"name": "AQI_Class",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_Pollution_Parquet')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_synapse_ws_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "RawParquet",
+						"fileSystem": "synapsestoragefss"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
+			]
 		}
 	]
 }
