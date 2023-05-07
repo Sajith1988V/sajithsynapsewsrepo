@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "IND_and_Nep_AQI_Dataset.csv",
 				"folderPath": "RawSource/Pollution",
 				"fileSystem": "synapsestoragefss"
 			},
