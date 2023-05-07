@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 1",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n   *\nFROM\n    OPENROWSET(\n        BULK 'https://synapsewsstorage.dfs.core.windows.net/synapsestoragefss/RawSource/data_b5bade29-503d-4ad1-87c6-f6e3c185c9ca_efc154c7-b674-4b4f-aba9-3190ae8ae9a3.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": -1
+		},
+		"type": "SqlQuery"
+	}
+}
