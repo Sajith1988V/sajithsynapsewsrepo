@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://api.coinstats.app/public/v1",
+			"url": "https://api.coinstats.app/public/v1/markets?coinId=bitcoin",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		},
