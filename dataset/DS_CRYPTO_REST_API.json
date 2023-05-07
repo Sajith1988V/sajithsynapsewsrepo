@@ -13,10 +13,7 @@
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
-			"relativeUrl": {
-				"value": "@concat('coinId=',dataset().currencyname)",
-				"type": "Expression"
-			}
+			"relativeUrl": "/markets?coinId=bitcoin"
 		},
 		"schema": []
 	}
