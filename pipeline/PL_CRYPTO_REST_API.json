@@ -5,7 +5,14 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "CurrenyNameList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -24,11 +31,31 @@
 							"supportRFC5988": "true"
 						}
 					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
 						"referenceName": "DS_CRYPTO_REST_API",
+						"type": "DatasetReference",
+						"parameters": {
+							"currencyname": "bitcoin"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CryptoCurrency_List",
 						"type": "DatasetReference"
 					}
 				]
