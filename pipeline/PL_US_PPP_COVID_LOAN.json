@@ -29,10 +29,13 @@
 					"sink": {
 						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
 						},
 						"formatSettings": {
-							"type": "ParquetWriteSettings"
+							"type": "ParquetWriteSettings",
+							"maxRowsPerFile": 2000000,
+							"fileNamePrefix": "us_ppp_loan_data_"
 						}
 					},
 					"enableStaging": false,
@@ -41,168 +44,228 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "Location",
+									"name": "loannumber",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Location",
+									"name": "loannumber",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Filename",
+									"name": "originatinglenderlocationid",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Filename",
+									"name": "originatinglenderlocationid",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Year",
+									"name": "cert",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Year",
+									"name": "cert",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Month",
+									"name": "cb",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Month",
+									"name": "cb",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Day",
+									"name": "stchrtr",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Day",
+									"name": "stchrtr",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Hour",
+									"name": "dateapproved",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Hour",
+									"name": "dateapproved",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "AQI",
+									"name": "borrowername",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "AQI",
+									"name": "borrowername",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "PM2.5",
+									"name": "borrowercity",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "PM2.5",
+									"name": "borrowercity",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "PM10",
+									"name": "borrowerstate",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "PM10",
+									"name": "borrowerstate",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "O3",
+									"name": "originatinglender",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "O3",
+									"name": "originatinglender",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "CO",
+									"name": "originatinglendercity",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "CO",
+									"name": "originatinglendercity",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "SO2",
+									"name": "originatinglenderstate",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "SO2",
+									"name": "originatinglenderstate",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "NO2",
+									"name": "naicscode",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "NO2",
+									"name": "naicscode",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "AQI_Class",
+									"name": "ruralurbanindicator",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "AQI_Class",
+									"name": "ruralurbanindicator",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "lmiindicator",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "lmiindicator",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "minority",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "minority",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "currentapprovalamount",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "currentapprovalamount",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "jobsreported",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "jobsreported",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "forgivenessamount",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "forgivenessamount",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
