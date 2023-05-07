@@ -29,13 +29,12 @@
 					"sink": {
 						"type": "ParquetSink",
 						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings",
-							"copyBehavior": "PreserveHierarchy"
+							"type": "AzureBlobFSWriteSettings"
 						},
 						"formatSettings": {
 							"type": "ParquetWriteSettings",
 							"maxRowsPerFile": 2000000,
-							"fileNamePrefix": "us_ppp_loan_data_"
+							"fileNamePrefix": ""
 						}
 					},
 					"enableStaging": false,
