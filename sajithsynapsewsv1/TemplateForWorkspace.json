@@ -16,6 +16,10 @@
 			"metadata": "Secure string for 'connectionString' of 'sajithsynapsewsv1-WorkspaceDefaultSqlServer'",
 			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:sajithsynapsewsv1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
+		"LS_CRYPTO_API_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://api.coinstats.app/public/v1/markets?coinId=bitcoin"
+		},
 		"LS_synapse_ws_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://synapsewsstorage.dfs.core.windows.net/"
@@ -801,6 +805,27 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/LS_CRYPTO_API')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('LS_CRYPTO_API_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/LS_synapse_ws_ADLS')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -1013,6 +1038,315 @@
 			},
 			"dependsOn": [],
 			"location": "canadacentral"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_CRYPTO_REST_API')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_CRYPTO_API",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"currencyname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": ""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_CRYPTO_API')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PL_CRYPTO_REST_API')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CurrenyNameList",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Destination",
+								"value": "synapsestoragefss/RawSource/"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['price']"
+										},
+										"sink": {
+											"name": "price"
+										}
+									},
+									{
+										"source": {
+											"path": "$['exchange']"
+										},
+										"sink": {
+											"name": "exchange"
+										}
+									},
+									{
+										"source": {
+											"path": "$['pair']"
+										},
+										"sink": {
+											"name": "pair"
+										}
+									},
+									{
+										"source": {
+											"path": "$['pairPrice']"
+										},
+										"sink": {
+											"name": "pairPrice"
+										}
+									},
+									{
+										"source": {
+											"path": "$['volume']"
+										},
+										"sink": {
+											"name": "volume"
+										}
+									}
+								],
+								"collectionReference": ""
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_CRYPTO_REST_API",
+								"type": "DatasetReference",
+								"parameters": {
+									"currencyname": "bitcoin"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_CRYPTO_DATA",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": "bitcoin"
+								}
+							}
+						]
+					},
+					{
+						"name": "CurrenyNameList",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "DS_CryptoCurrency_List",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DS_CRYPTO_REST_API')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_CRYPTO_DATA')]",
+				"[concat(variables('workspaceId'), '/datasets/DS_CryptoCurrency_List')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_CryptoCurrency_List')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_synapse_ws_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "CryptoCurrency_List.csv",
+						"folderPath": "RawSource",
+						"fileSystem": "synapsestoragefss"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DS_CRYPTO_DATA')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_synapse_ws_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "RawSource",
+						"fileSystem": "synapsestoragefss"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/LS_synapse_ws_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n   *\nFROM\n    OPENROWSET(\n        BULK 'https://synapsewsstorage.dfs.core.windows.net/synapsestoragefss/RawSource/data_b5bade29-503d-4ad1-87c6-f6e3c185c9ca_efc154c7-b674-4b4f-aba9-3190ae8ae9a3.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": -1
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
 		}
 	]
 }

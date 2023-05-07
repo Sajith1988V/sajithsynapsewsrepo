@@ -11,6 +11,9 @@
 		"sajithsynapsewsv1-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:sajithsynapsewsv1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
+		"LS_CRYPTO_API_properties_typeProperties_url": {
+			"value": "https://api.coinstats.app/public/v1/markets?coinId=bitcoin"
+		},
 		"LS_synapse_ws_ADLS_properties_typeProperties_url": {
 			"value": "https://synapsewsstorage.dfs.core.windows.net/"
 		},
