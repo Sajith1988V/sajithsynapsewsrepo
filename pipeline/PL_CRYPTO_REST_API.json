@@ -50,9 +50,7 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
-							"wildcardFolderPath": "Crypto",
-							"wildcardFileName": "*",
+							"fileListPath": "synapsestoragefss/RawSource/CryptoCurrency_List.csv",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
