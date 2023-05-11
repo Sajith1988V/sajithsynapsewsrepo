@@ -1,0 +1,131 @@
+{
+	"name": "Notebook 2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sajithsparkpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1486a4bb-b99c-4641-92a5-6de2c243092a"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/640c9935-6193-42e0-b36a-fb1f16b5238c/resourceGroups/mysynapse-rg1/providers/Microsoft.Synapse/workspaces/sajithsynapsewsv1/bigDataPools/sajithsparkpool",
+				"name": "sajithsparkpool",
+				"type": "Spark",
+				"endpoint": "https://sajithsynapsewsv1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sajithsparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"df = spark.read.option(\"header\", \"true\").option(\"delimiter\",\"|\").load('abfss://synapsestoragefss@synapsewsstorage.dfs.core.windows.net/RawSource/USA_PPP_COVID_LOAN.csv', format='csv')\r\n",
+					"#display(df.limit(10))\r\n",
+					"dfclean = df.dropna()\r\n",
+					"dfclean.cache()\r\n",
+					"dfclean.printSchema()\r\n",
+					"#dfminorityclean = dfclean.withColumn(\"minority\", when (dfclean.minority ==\"undefined\", \"n/a\").otherwise(df.minority) )\r\n",
+					"dfclean.write.mode(\"overwrite\").saveAsTable(\"table_uspppdata\")\r\n",
+					"\r\n",
+					"dfclean.groupBy(\"borrowerstate\").agg(count(\"loannumber\").alias(\"loancount_statewise\")).show()\r\n",
+					"\r\n",
+					"\r\n",
+					"\r\n",
+					"# distinctstate = dfclean.select(\"borrowerstate\").distinct()\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 73
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"\r\n",
+					"select distinct minority from table_uspppdata\r\n",
+					""
+				],
+				"execution_count": 52
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#deltadf = dfclean.write.format(\"delta\").partitionBy(\"borrowerstate\").save('abfss://synapsestoragefss@synapsewsstorage.dfs.core.windows.net/DeltaUSPPP/')\r\n",
+					"\r\n",
+					"from notebookutils import mssparkutils\r\n",
+					"\r\n",
+					"fname = [i.name for i in mssparkutils.fs.ls(\"abfss://synapsestoragefss@synapsewsstorage.dfs.core.windows.net/DeltaUSPPP\") if i.name != \"_delta_log\"]\r\n",
+					"#print(fname)\r\n",
+					"\r\n",
+					"for i in fname:\r\n",
+					"    ddf = spark.read.format(\"delta\").load(f\"abfss://synapsestoragefss@synapsewsstorage.dfs.core.windows.net/DeltaUSPPP/{i}\")\r\n",
+					"    print(f\"{i} -> {str(ddf.count())}\")"
+				],
+				"execution_count": 67
+			}
+		]
+	}
+}
