@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "1486a4bb-b99c-4641-92a5-6de2c243092a"
+				"spark.autotune.trackingId": "6e04fc5f-380e-48f1-94f5-00807b611888"
 			}
 		},
 		"metadata": {
@@ -60,19 +60,22 @@
 					"#display(df.limit(10))\r\n",
 					"dfclean = df.dropna()\r\n",
 					"dfclean.cache()\r\n",
-					"dfclean.printSchema()\r\n",
+					"#dfclean.printSchema()\r\n",
 					"#dfminorityclean = dfclean.withColumn(\"minority\", when (dfclean.minority ==\"undefined\", \"n/a\").otherwise(df.minority) )\r\n",
 					"dfclean.write.mode(\"overwrite\").saveAsTable(\"table_uspppdata\")\r\n",
 					"\r\n",
-					"dfclean.groupBy(\"borrowerstate\").agg(count(\"loannumber\").alias(\"loancount_statewise\")).show()\r\n",
+					"#dfclean.groupBy(\"borrowerstate\").agg(count(\"loannumber\").alias(\"loancount_statewise\")).show()\r\n",
+					"rdd = dfclean.rdd\r\n",
 					"\r\n",
+					"result = rdd.collect()\r\n",
+					"print(result)\r\n",
 					"\r\n",
 					"\r\n",
 					"# distinctstate = dfclean.select(\"borrowerstate\").distinct()\r\n",
 					"\r\n",
 					""
 				],
-				"execution_count": 73
+				"execution_count": 80
 			},
 			{
 				"cell_type": "code",
