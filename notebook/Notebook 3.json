@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "646d722b-9bad-40f1-a36e-0d4850ae8557"
+				"spark.autotune.trackingId": "a01dfab2-cfc0-4ffa-97fd-352c21eb8ac3"
 			}
 		},
 		"metadata": {
@@ -67,6 +67,29 @@
 					"df.write.format(\"delta\").saveAsTable(\"employee_data\")"
 				],
 				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"select * from employee_data;"
+				],
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",

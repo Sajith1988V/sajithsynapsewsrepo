@@ -2,12 +2,12 @@
 	"name": "SQL script 1",
 	"properties": {
 		"content": {
-			"query": "-- This is auto-generated code\nSELECT\n   *\nFROM\n    OPENROWSET(\n        BULK 'https://synapsewsstorage.dfs.core.windows.net/synapsestoragefss/RawSource/data_b5bade29-503d-4ad1-87c6-f6e3c185c9ca_efc154c7-b674-4b4f-aba9-3190ae8ae9a3.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+			"query": "use testdb;\n\nIF NOT EXISTS (SELECT * FROM sys.external_file_formats WHERE name = 'SynapseParquetFormat') \n\tCREATE EXTERNAL FILE FORMAT [SynapseParquetFormat] \n\tWITH ( FORMAT_TYPE = PARQUET)\nGO\n\nIF NOT EXISTS (SELECT * FROM sys.external_data_sources WHERE name = 'synapsefs_synapsestoragecontainer_dfs_core_windows_net') \n\tCREATE EXTERNAL DATA SOURCE [synapsefs_synapsestoragecontainer_dfs_core_windows_net] \n\tWITH (\n\t\tLOCATION = 'abfss://synapsefs@synapsestoragecontainer.dfs.core.windows.net' \n\t)\nGO\n\n--drop external table dbo.employee;\nCREATE EXTERNAL TABLE dbo.EMPLOYEE (\n\t[_c0] nvarchar(4000),\n\t[_c1] nvarchar(4000),\n\t[_c2] nvarchar(4000),\n\t[_c3] nvarchar(4000),\n\t[_c4] nvarchar(4000),\n\t[_c5] nvarchar(4000),\n\t[_c6] nvarchar(4000),\n\t[_c7] nvarchar(4000),\n\t[_c8] nvarchar(4000),\n\t[_c9] nvarchar(4000),\n\t[_c10] nvarchar(4000),\n\t[_c11] nvarchar(4000),\n\t[_c12] nvarchar(4000),\n\t[_c13] nvarchar(4000),\n\t[_c14] nvarchar(4000),\n\t[_c15] nvarchar(4000),\n\t[_c16] nvarchar(4000),\n\t[_c17] nvarchar(4000),\n\t[_c18] nvarchar(4000),\n\t[_c19] nvarchar(4000),\n\t[_c20] nvarchar(4000),\n\t[_c21] nvarchar(4000),\n\t[_c22] nvarchar(4000),\n\t[_c23] nvarchar(4000),\n\t[_c24] nvarchar(4000),\n\t[_c25] nvarchar(4000)\n\t)\n\tWITH (\n\tLOCATION = 'synapsefs/synapse/workspaces/mysynapsewsaug27/warehouse/employee_data/part-00000-1e44fb12-67df-4325-8cb2-ff27dda31d66-c000.snappy.parquet',\n\tDATA_SOURCE = [synapsefs_synapsestoragecontainer_dfs_core_windows_net],\n\tFILE_FORMAT = [SynapseParquetFormat]\n\t)\nGO\n\nselect * from dbo.EMPLOYEE",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
+				"databaseName": "testdb",
 				"poolName": "Built-in"
 			},
 			"resultLimit": -1
